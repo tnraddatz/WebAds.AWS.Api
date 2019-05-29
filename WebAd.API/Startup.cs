@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using WebAd.API.HealthChecks;
+using WebAd.API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using WebAd.API.HealthChecks;
-using WebAd.API.Services;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace WebAd.API
 {
@@ -35,8 +29,27 @@ namespace WebAd.API
             services.AddTransient<StorageHealthCheck>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddHealthChecks().AddCheck<StorageHealthCheck>("Storage");
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllOrigin", policy => policy.WithOrigins("*").AllowAnyHeader());
+            });
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info
+                {
+                    Title = "Web Advertisement Apis",
+                    Version = "version 1",
+                    Contact = new Contact
+                    {
+                        Name = "Thomas Raddatz",
+                        Email = "a@b.com"
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +61,11 @@ namespace WebAd.API
             }
 
             app.UseHealthChecks("/health");
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web Advert Api");
+            });
             app.UseMvc();
         }
     }

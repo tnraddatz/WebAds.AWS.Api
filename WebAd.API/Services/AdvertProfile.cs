@@ -1,9 +1,5 @@
-﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WebAd.API.Models;
+﻿using AdvertApi.Models;
+using AutoMapper;
 
 namespace WebAd.API.Services
 {
@@ -11,8 +7,7 @@ namespace WebAd.API.Services
     {
         public AdvertProfile()
         {
-            //This will map attribute names (as long as theyre the same)
-            CreateMap<AdvertModel, AdvertDbModel>();
+            CreateMap<AdvertDbModel, AdvertModel>().ReverseMap();
         }
     }
 }
